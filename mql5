@@ -1,0 +1,81 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                               MultiChartMaster.mq5|
+//|                  Developed by Forex Robot Easy Team               |
+//|                       http://www.forexroboteasy.com                |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries and indicators
+#property include 'SlaveIndicator.mqh'
+
+// Global variables
+CPanel SymbolPanel; // Symbol Panel for easy navigation between charts
+
+//+------------------------------------------------------------------+
+//| Custom initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Initialize Symbol Panel
+   SymbolPanel.Init();
+
+   // Initialize Slave Indicator
+   SlaveIndicator.Init();
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Deinitialize Symbol Panel
+   SymbolPanel.Deinit();
+
+   // Deinitialize Slave Indicator
+   SlaveIndicator.Deinit();
+}
+
+//+------------------------------------------------------------------+
+//| Custom start function                                            |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+   // Main loop
+   while(!IsStopped())
+   {
+      // Update Symbol Panel
+      SymbolPanel.Update();
+
+      // Check for user input
+      if(SymbolPanel.SymbolSelected())
+      {
+         // Switch to selected symbol and chart
+         SymbolPanel.SwitchToSelectedSymbol();
+      }
+
+      // Check for keyboard shortcuts in Slave Indicator
+      if(SlaveIndicator.IsDrawingShortcutPressed())
+      {
+         // Draw levels and objects on current chart
+         SlaveIndicator.DrawLevelsAndObjects();
+      }
+      else if(SlaveIndicator.IsTimeFrameShortcutPressed())
+      {
+         // Change chart time frame
+         SlaveIndicator.ChangeChartTimeFrame();
+      }
+      else if(SlaveIndicator.IsSelectAllShortcutPressed())
+      {
+         // Select or deselect all drawn objects
+         SlaveIndicator.SelectOrDeselectAllObjects();
+      }
+
+      // Perform trading operations
+      // ...
+
+      // Sleep for a while to reduce CPU usage
+      Sleep(1000);
+   }
+}
